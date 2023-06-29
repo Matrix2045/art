@@ -1,10 +1,33 @@
 import logo from './logo.svg';
 import './App.css';
-
+import { ethers } from 'ethers'
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
+
+	const connect = async () => {
+
+		const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+
+		await provider.send("eth_requestAccounts", []);
+
+
+		const signer = provider.getSigner()
+
+		const addr = await signer.getAddress()
+
+
+		
+
+		console.log(addr)
+		alert(addr)
+
+
+	}
+	return (
+		<div className="App">
+
+			<button onClick={connect}>connect wallet</button>
+			{/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
@@ -17,9 +40,9 @@ function App() {
         >
           Learn React
         </a>
-      </header>
-    </div>
-  );
+      </header> */}
+		</div>
+	);
 }
 
 export default App;
