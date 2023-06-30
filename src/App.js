@@ -1,48 +1,56 @@
-import logo from './logo.svg';
+import React from 'react';
+
 import './App.css';
-import { ethers } from 'ethers'
+import { ethers } from "ethers"
+import Lock from "./artifacts/contracts/Lock.sol/Lock.json";
+
 function App() {
+  const connect = async () => {
 
-	const connect = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
 
-		const provider = new ethers.providers.Web3Provider(window.ethereum)
+    await provider.send("eth_requestAccounts", []);
 
+    const signer = provider.getSigner();
+    
+    const addr = await signer.getAddress()
+  }
 
-		await provider.send("eth_requestAccounts", []);
+  const readMessage = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    await provider.send("eth_requestAccounts", []);
+    const lock = new ethers.Contract("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0", Lock.abi, provider);
+    const message = await lock.message();
+    alert(message)
 
+  }
 
-		const signer = provider.getSigner()
+  const setMessage = async () => {
 
-		const addr = await signer.getAddress()
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
 
+    await provider.send("eth_requestAccounts", []);
 
-		
+    const signer = provider.getSigner()
 
-		console.log(addr)
-		alert(addr)
+    let lock = new ethers.Contract("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0", Lock.abi, signer);
 
+    let transaction = await lock.connect(signer).setMessage("world hello!");
+    let tx = await transaction.wait(1);
+    debugger
+    let event = tx.events[0];
+    let value = event.args[0];
 
-	}
-	return (
-		<div className="App">
-
-			<button onClick={connect}>connect wallet</button>
-			{/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
-		</div>
-	);
+    let message = value.toString();
+    alert(message)
+  }
+  return (
+    <div className="App">
+      <button onClick={connect}>connect wallet</button>
+      <button onClick={readMessage}>readMessage</button>
+      <button onClick={setMessage}>setMessage</button>
+    </div>
+  );
 }
 
 export default App;
